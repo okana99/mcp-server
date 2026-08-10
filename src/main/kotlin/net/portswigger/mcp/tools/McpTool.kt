@@ -57,10 +57,7 @@ inline fun <reified I : Any> Server.mcpTool(
     })
 }
 
-@OptIn(ExperimentalTypeInference::class)
-@OverloadResolutionByLambdaReturnType
-@JvmName("mcpToolUnit")
-inline fun <reified I : Any> Server.mcpTool(
+inline fun <reified I : Any> Server.mcpUnitTool(
     description: String,
     crossinline execute: I.() -> Unit
 ) {
