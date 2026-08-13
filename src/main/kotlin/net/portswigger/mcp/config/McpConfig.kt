@@ -28,6 +28,16 @@ class McpConfig(storage: PersistedObject, private val logging: Logging) {
             }
         }
 
+    private var _alwaysAllowHttpArtifacts by storage.boolean(false)
+    var alwaysAllowHttpArtifacts: Boolean
+        get() = _alwaysAllowHttpArtifacts
+        set(value) {
+            if (_alwaysAllowHttpArtifacts != value) {
+                _alwaysAllowHttpArtifacts = value
+                notifyDataAccessChanged()
+            }
+        }
+
     private var _alwaysAllowWebSocketHistory by storage.boolean(false)
     var alwaysAllowWebSocketHistory: Boolean
         get() = _alwaysAllowWebSocketHistory
