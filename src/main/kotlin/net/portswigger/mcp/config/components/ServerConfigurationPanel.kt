@@ -16,7 +16,6 @@ class ServerConfigurationPanel(
 ) : JPanel() {
 
     private lateinit var alwaysAllowHttpHistoryCheckBox: JCheckBox
-    private lateinit var alwaysAllowHttpArtifactsCheckBox: JCheckBox
     private lateinit var alwaysAllowWebSocketHistoryCheckBox: JCheckBox
     private lateinit var alwaysAllowOrganizerCheckBox: JCheckBox
 
@@ -68,17 +67,9 @@ class ServerConfigurationPanel(
         add(createVerticalStrut(Design.Spacing.SM))
 
         alwaysAllowHttpHistoryCheckBox = createIndentedCheckBox(
-            "Always allow HTTP history access", config.alwaysAllowHttpHistory, config.requireDataAccessApproval
+            "Always allow HTTP message access", config.alwaysAllowHttpHistory, config.requireDataAccessApproval
         ) { config.alwaysAllowHttpHistory = it }
         add(alwaysAllowHttpHistoryCheckBox)
-        add(createVerticalStrut(Design.Spacing.SM))
-
-        alwaysAllowHttpArtifactsCheckBox = createIndentedCheckBox(
-            "Always allow site map, Repeater, and MCP HTTP artifact access",
-            config.alwaysAllowHttpArtifacts,
-            config.requireDataAccessApproval
-        ) { config.alwaysAllowHttpArtifacts = it }
-        add(alwaysAllowHttpArtifactsCheckBox)
         add(createVerticalStrut(Design.Spacing.SM))
 
         alwaysAllowWebSocketHistoryCheckBox = createIndentedCheckBox(
@@ -128,16 +119,13 @@ class ServerConfigurationPanel(
             config.requireDataAccessApproval = enabled
             if (!enabled) {
                 config.alwaysAllowHttpHistory = false
-                config.alwaysAllowHttpArtifacts = false
                 config.alwaysAllowWebSocketHistory = false
                 config.alwaysAllowOrganizer = false
                 alwaysAllowHttpHistoryCheckBox.isSelected = false
-                alwaysAllowHttpArtifactsCheckBox.isSelected = false
                 alwaysAllowWebSocketHistoryCheckBox.isSelected = false
                 alwaysAllowOrganizerCheckBox.isSelected = false
             }
             alwaysAllowHttpHistoryCheckBox.isEnabled = enabled
-            alwaysAllowHttpArtifactsCheckBox.isEnabled = enabled
             alwaysAllowWebSocketHistoryCheckBox.isEnabled = enabled
             alwaysAllowOrganizerCheckBox.isEnabled = enabled
         }
@@ -146,7 +134,6 @@ class ServerConfigurationPanel(
     fun updateDataAccessCheckboxes() {
         SwingUtilities.invokeLater {
             alwaysAllowHttpHistoryCheckBox.isSelected = config.alwaysAllowHttpHistory
-            alwaysAllowHttpArtifactsCheckBox.isSelected = config.alwaysAllowHttpArtifacts
             alwaysAllowWebSocketHistoryCheckBox.isSelected = config.alwaysAllowWebSocketHistory
             alwaysAllowOrganizerCheckBox.isSelected = config.alwaysAllowOrganizer
         }

@@ -176,9 +176,8 @@ internal fun Server.registerHttpMessageTools(api: MontoyaApi, config: McpConfig,
 private fun requireSourceAccess(api: MontoyaApi, config: McpConfig, sources: Set<String>) {
     sources.mapTo(mutableSetOf()) {
         when (it) {
-            "proxy" -> DataAccessType.HTTP_HISTORY
             "organizer" -> DataAccessType.ORGANIZER
-            else -> DataAccessType.HTTP_ARTIFACTS
+            else -> DataAccessType.HTTP_HISTORY
         }
     }
         .forEach { accessType ->
