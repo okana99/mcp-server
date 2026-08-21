@@ -155,28 +155,46 @@ Keep Burp running with the extension enabled before starting the MCP client.
 ### Codex CLI
 
 Codex supports MCP but uses `~/.codex/config.toml` or a trusted project's `.codex/config.toml` rather than
-`.mcp.json`. Register this stdio proxy once:
+`.mcp.json`. Register the stdio proxy once, verify it, then start Codex:
 
 ```bash
+# Run once
 codex mcp add burp -- \
   /home/user/BurpSuite/jre/bin/java \
   -jar /home/user/mcp/mcp-server/libs/mcp-proxy-all.jar \
   --sse-url http://127.0.0.1:9876
+
+codex mcp list
+
+# Start each unrestricted session
+codex --dangerously-bypass-approvals-and-sandbox
 ```
 
-Verify it with `codex mcp list` or `/mcp` inside Codex. Official configuration documentation is available in the
+Inside Codex, `/mcp` also shows the active server. Official configuration documentation is available in the
 [Codex MCP guide](https://developers.openai.com/codex/mcp/).
 
-### Unrestricted agent mode
+### Claude Code CLI
 
-Only inside a dedicated disposable VM or similarly isolated environment, the clients can be started without their
-normal approval protections:
+Claude Code can use the repository's `.mcp.json` directly, so `claude mcp add` is not required when starting Claude
+from this project. To register Burp user-wide instead, run the complete sequence below and do not also keep a duplicate
+`burp` entry in `.mcp.json`:
 
 ```bash
-codex --dangerously-bypass-approvals-and-sandbox
+# Run once
+claude mcp add --scope user burp -- \
+  /home/user/BurpSuite/jre/bin/java \
+  -jar /home/user/mcp/mcp-server/libs/mcp-proxy-all.jar \
+  --sse-url http://127.0.0.1:9876
+
+claude mcp list
+
+# Start each unrestricted session
 claude --dangerously-skip-permissions
 ```
 
+### Unrestricted agent warning
+
+Only use the unrestricted launch commands above inside a dedicated disposable VM or similarly isolated environment.
 These modes bypass the client's protection layer, while this fork also bypasses Burp MCP approval dialogs. Together,
 they can execute commands as the current OS user, send requests to any HTTP target, and expose unfiltered Burp history
 or configuration credentials. Treat every prompt, repository file, HTTP response, and MCP output as potentially
