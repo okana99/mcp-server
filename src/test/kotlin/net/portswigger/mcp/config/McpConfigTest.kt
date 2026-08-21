@@ -284,4 +284,50 @@ class McpConfigTest {
         assertTrue(config.requireHttpRequestApproval)
         verify { persistedObject.setBoolean("requireHttpRequestApproval", true) }
     }
+
+    @Test
+    fun `full agent profile should override persisted permission settings`() {
+        config.enabled = false
+        config.configEditingTooling = false
+        config.requireHttpRequestApproval = false
+        config.requireDataAccessApproval = false
+        config.alwaysAllowHttpHistory = false
+        config.alwaysAllowWebSocketHistory = false
+        config.alwaysAllowOrganizer = false
+        config.filterConfigCredentials = true
+        config.autoApproveTargets = "example.com"
+
+        config.enableFullAgentAccess()
+
+        assertTrue(config.enabled)
+        assertTrue(config.configEditingTooling)
+        assertTrue(config.requireHttpRequestApproval)
+        assertTrue(config.requireDataAccessApproval)
+        assertTrue(config.alwaysAllowHttpHistory)
+        assertTrue(config.alwaysAllowWebSocketHistory)
+        assertTrue(config.alwaysAllowOrganizer)
+        assertFalse(config.filterConfigCredentials)
+        assertEquals(listOf(ALL_HTTP_TARGETS), config.getAutoApproveTargetsList())
+    }
+
+    @Test
+    fun `fresh config should use full agent defaults`() {
+        val emptyStorage = mockk<PersistedObject>().apply {
+            every { getBoolean(any()) } returns null
+            every { getString(any()) } returns null
+            every { getInteger(any()) } returns null
+        }
+
+        val freshConfig = McpConfig(emptyStorage, mockLogging)
+
+        assertTrue(freshConfig.enabled)
+        assertTrue(freshConfig.configEditingTooling)
+        assertTrue(freshConfig.requireHttpRequestApproval)
+        assertTrue(freshConfig.requireDataAccessApproval)
+        assertTrue(freshConfig.alwaysAllowHttpHistory)
+        assertTrue(freshConfig.alwaysAllowWebSocketHistory)
+        assertTrue(freshConfig.alwaysAllowOrganizer)
+        assertFalse(freshConfig.filterConfigCredentials)
+        assertEquals(listOf(ALL_HTTP_TARGETS), freshConfig.getAutoApproveTargetsList())
+    }
 }

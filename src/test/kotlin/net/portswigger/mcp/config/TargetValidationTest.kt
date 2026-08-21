@@ -29,6 +29,7 @@ class TargetValidationTest {
         assertTrue(isValidTarget("*.example.com"))
         assertTrue(isValidTarget("*.api.test.org"))
         assertTrue(isValidTarget("*.co.uk"))
+        assertTrue(isValidTarget(ALL_HTTP_TARGETS))
 
         // IPv6 formats
         assertTrue(isValidTarget("::1"))

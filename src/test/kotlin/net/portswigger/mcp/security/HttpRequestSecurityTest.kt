@@ -3,6 +3,7 @@ package net.portswigger.mcp.security
 import burp.api.montoya.logging.Logging
 import burp.api.montoya.persistence.PersistedObject
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -114,6 +115,21 @@ class HttpRequestSecurityTest {
 
             val result3 = HttpRequestSecurity.checkHttpRequestPermission("example.com", 80, config)
             assertFalse(result3)
+        }
+    }
+
+    @Test
+    fun `all-target wildcard should approve every host and port without a dialog`() {
+        config.addAutoApproveTarget("*")
+
+        runBlocking {
+            assertTrue(HttpRequestSecurity.checkHttpRequestPermission("example.com", 80, config))
+            assertTrue(HttpRequestSecurity.checkHttpRequestPermission("127.0.0.1", 65535, config))
+            assertTrue(HttpRequestSecurity.checkHttpRequestPermission("2001:db8::1", 443, config))
+        }
+
+        coVerify(exactly = 0) {
+            mockApprovalHandler.requestApproval(any(), any(), any(), any(), any())
         }
     }
 

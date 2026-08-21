@@ -15,6 +15,7 @@ object TargetValidation {
      * - Hostnames with ports: example.com:8080, localhost:3000
      * - IPv6 with ports: [::1]:8080
      * - Wildcards: *.example.com, *.api.com
+     * - All targets: *
      *
      * @param target The target string to validate
      * @return true if the target is valid, false otherwise
@@ -23,6 +24,8 @@ object TargetValidation {
         if (target.isBlank() || target.length > MAX_TARGET_LENGTH) return false
 
         if (target.contains(',') || target.any { it.isWhitespace() }) return false
+
+        if (target == ALL_HTTP_TARGETS) return true
 
         if (target.startsWith("[") && target.contains("]:")) {
             val portPart = target.substringAfterLast(":")

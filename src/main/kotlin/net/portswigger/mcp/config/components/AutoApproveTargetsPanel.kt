@@ -46,7 +46,7 @@ class AutoApproveTargetsPanel(private val config: McpConfig) : JPanel() {
             foreground = Design.Colors.onSurfaceVariant
             border = BorderFactory.createEmptyBorder(0, 0, Design.Spacing.SM, 0)
         }
-        val examplesLabel = JLabel("Examples: example.com, localhost:8080, *.api.com").apply {
+        val examplesLabel = JLabel("All targets: *   Examples: example.com, localhost:8080, *.api.com").apply {
             alignmentX = LEFT_ALIGNMENT
             font = Design.Typography.labelMedium
             foreground = Design.Colors.onSurfaceVariant
@@ -223,7 +223,7 @@ class AutoApproveTargetsPanel(private val config: McpConfig) : JPanel() {
             addActionListener {
                 val input = Dialogs.showInputDialog(
                     findBurpFrame(),
-                    "Enter target (hostname or hostname:port):\nExamples: example.com, localhost:8080, *.api.com"
+                    "Enter target (hostname or hostname:port):\nUse * for all targets. Examples: example.com, localhost:8080, *.api.com"
                 )
 
                 if (!input.isNullOrBlank()) {

@@ -37,3 +37,18 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Local files ###
+.kotlin/
+Screenshot_*.png
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+secrets.json

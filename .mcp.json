@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "burp": {
+      "command": "/home/user/BurpSuite/jre/bin/java",
+      "args": [
+        "-jar",
+        "/home/user/mcp/mcp-server/libs/mcp-proxy-all.jar",
+        "--sse-url",
+        "http://127.0.0.1:9876"
+      ]
+    }
+  }
+}

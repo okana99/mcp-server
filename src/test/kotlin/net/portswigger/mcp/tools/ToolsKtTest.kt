@@ -424,6 +424,25 @@ class ToolsKtTest {
             
             verify(exactly = 1) { urlUtils.encode(any<String>()) }
         }
+
+        @Test
+        fun `MCP server should accept request bodies larger than the SDK default`() {
+            val urlUtils = mockk<URLUtils>()
+            val utilities = mockk<Utilities>()
+            val largeContent = "a".repeat(4 * 1024 * 1024 + 1)
+
+            every { api.utilities() } returns utilities
+            every { utilities.urlUtils() } returns urlUtils
+            every { urlUtils.encode(largeContent) } returns "accepted"
+
+            runBlocking {
+                client.callTool(
+                    "url_encode", mapOf("content" to largeContent)
+                ).expectTextContent("accepted")
+            }
+
+            verify(exactly = 1) { urlUtils.encode(largeContent) }
+        }
         
         @Test
         fun `url decode should work properly`() {
@@ -803,16 +822,18 @@ class ToolsKtTest {
         }
 
         @Test
-        fun `get proxy history should return valid size limited JSON`() {
+        fun `get proxy history should return complete JSON without character limit`() {
             val proxy = mockk<Proxy>()
             val historyItem = mockk<ProxyHttpRequestResponse>()
+            val request = "GET / HTTP/1.1\r\nX-Long: ${"\\\"😀".repeat(2_000)}"
+            val response = "HTTP/1.1 200 OK\r\n\r\n${"😀".repeat(3_000)}"
             every { api.proxy() } returns proxy
             every { proxy.history() } returns listOf(historyItem)
 
             mockkStatic("net.portswigger.mcp.schema.SerializationKt")
             every { historyItem.toSerializableForm() } returns HttpRequestResponse(
-                request = "GET / HTTP/1.1\r\nX-Long: ${"\\\"😀".repeat(2_000)}",
-                response = "HTTP/1.1 200 OK\r\n\r\n${"😀".repeat(3_000)}",
+                request = request,
+                response = response,
                 notes = "keep me"
             )
 
@@ -822,10 +843,10 @@ class ToolsKtTest {
                 ).expectTextContent()
                 val item = Json.parseToJsonElement(text).jsonObject
 
-                assertTrue(text.length <= 5_000)
+                assertTrue(text.length > 5_000)
                 assertEquals(setOf("request", "response", "notes"), item.keys)
-                assertTrue(item.getValue("request").jsonPrimitive.content.endsWith("... (truncated)"))
-                assertTrue(item.getValue("response").jsonPrimitive.content.endsWith("... (truncated)"))
+                assertEquals(request, item.getValue("request").jsonPrimitive.content)
+                assertEquals(response, item.getValue("response").jsonPrimitive.content)
                 assertEquals("keep me", item.getValue("notes").jsonPrimitive.content)
             }
         }

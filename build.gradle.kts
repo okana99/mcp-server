@@ -104,8 +104,8 @@ tasks {
                 mapOf(
                     "Implementation-Title" to project.name,
                     "Implementation-Version" to project.version,
-                    "Implementation-Vendor" to "PortSwigger",
-                    "Built-By" to System.getProperty("user.name"),
+                    "Implementation-Vendor" to "Unofficial full-agent fork",
+                    "Implementation-Upstream" to "https://github.com/PortSwigger/mcp-server",
                     "Built-Date" to Instant.now().toString(),
                     "Built-JDK" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
                         System.getProperty("java.vm.version")
@@ -124,6 +124,8 @@ tasks {
         exclude("META-INF/NOTICE*")
         exclude("META-INF/LICENSE*")
         exclude("module-info.class")
+
+        from(layout.projectDirectory.file("LICENSE"))
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }

@@ -92,7 +92,7 @@ class KtorServerManager(private val api: MontoyaApi) : ServerManager {
                         call.response.header("Content-Security-Policy", "default-src 'none'")
                     }
 
-                    mcp {
+                    mcp(maxRequestBodySize = Long.MAX_VALUE) {
                         mcpServer
                     }
 

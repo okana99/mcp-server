@@ -1,6 +1,7 @@
 package net.portswigger.mcp.security
 
 import burp.api.montoya.MontoyaApi
+import net.portswigger.mcp.config.ALL_HTTP_TARGETS
 import net.portswigger.mcp.config.Dialogs
 import net.portswigger.mcp.config.McpConfig
 import javax.swing.SwingUtilities
@@ -71,6 +72,8 @@ object HttpRequestSecurity {
 
         return targets.any { approved ->
             when {
+                approved == ALL_HTTP_TARGETS -> true
+
                 approved.equals(target, ignoreCase = true) -> true
 
                 approved.equals(hostOnly, ignoreCase = true) -> true

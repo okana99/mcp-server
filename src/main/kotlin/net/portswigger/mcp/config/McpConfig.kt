@@ -8,17 +8,18 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 private const val TARGET_SEPARATOR = "\n"
+const val ALL_HTTP_TARGETS = "*"
 
 class McpConfig(storage: PersistedObject, private val logging: Logging) {
 
     var enabled by storage.boolean(true)
-    var configEditingTooling by storage.boolean(false)
+    var configEditingTooling by storage.boolean(true)
     var host by storage.string("127.0.0.1")
     var port by storage.int(9876)
     var requireHttpRequestApproval by storage.boolean(true)
     var requireDataAccessApproval by storage.boolean(true)
 
-    private var _alwaysAllowHttpHistory by storage.boolean(false)
+    private var _alwaysAllowHttpHistory by storage.boolean(true)
     var alwaysAllowHttpHistory: Boolean
         get() = _alwaysAllowHttpHistory
         set(value) {
@@ -28,7 +29,7 @@ class McpConfig(storage: PersistedObject, private val logging: Logging) {
             }
         }
 
-    private var _alwaysAllowWebSocketHistory by storage.boolean(false)
+    private var _alwaysAllowWebSocketHistory by storage.boolean(true)
     var alwaysAllowWebSocketHistory: Boolean
         get() = _alwaysAllowWebSocketHistory
         set(value) {
@@ -38,7 +39,7 @@ class McpConfig(storage: PersistedObject, private val logging: Logging) {
             }
         }
 
-    private var _alwaysAllowOrganizer by storage.boolean(false)
+    private var _alwaysAllowOrganizer by storage.boolean(true)
     var alwaysAllowOrganizer: Boolean
         get() = _alwaysAllowOrganizer
         set(value) {
@@ -48,9 +49,9 @@ class McpConfig(storage: PersistedObject, private val logging: Logging) {
             }
         }
 
-    var filterConfigCredentials by storage.boolean(true)
+    var filterConfigCredentials by storage.boolean(false)
 
-    private var _autoApproveTargets by storage.stringList("")
+    private var _autoApproveTargets by storage.stringList(ALL_HTTP_TARGETS)
     private val targetsChangeListeners = CopyOnWriteArrayList<ListenerRegistration>()
     private val dataAccessChangeListeners = CopyOnWriteArrayList<ListenerRegistration>()
 
@@ -69,6 +70,25 @@ class McpConfig(storage: PersistedObject, private val logging: Logging) {
         if (valid.size != current.size) {
             _autoApproveTargets = valid.joinToString(TARGET_SEPARATOR)
         }
+    }
+
+    /**
+     * Applies the permissive profile used by this full-agent build.
+     *
+     * This intentionally overrides persisted permission settings whenever the
+     * extension loads. Individual controls can still be changed for the current
+     * Burp session, but the full-agent profile is restored on the next load.
+     */
+    fun enableFullAgentAccess() {
+        enabled = true
+        configEditingTooling = true
+        requireHttpRequestApproval = true
+        requireDataAccessApproval = true
+        alwaysAllowHttpHistory = true
+        alwaysAllowWebSocketHistory = true
+        alwaysAllowOrganizer = true
+        filterConfigCredentials = false
+        autoApproveTargets = ALL_HTTP_TARGETS
     }
 
     fun addAutoApproveTarget(target: String): Boolean {

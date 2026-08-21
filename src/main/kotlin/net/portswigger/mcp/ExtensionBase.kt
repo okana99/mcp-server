@@ -14,7 +14,9 @@ class ExtensionBase : BurpExtension {
     override fun initialize(api: MontoyaApi) {
         api.extension().setName("Burp MCP Server")
 
-        val config = McpConfig(api.persistence().extensionData(), api.logging())
+        val config = McpConfig(api.persistence().extensionData(), api.logging()).apply {
+            enableFullAgentAccess()
+        }
         val serverManager = KtorServerManager(api)
 
         val proxyJarManager = ProxyJarManager(api.logging())
